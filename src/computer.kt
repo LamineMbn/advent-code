@@ -4,15 +4,24 @@ var computerInputs : List<Int> = listOf(1,12,2,3,1,1,2,3,1,3,4,3,1,5,0,3,2,1,10,
 
 fun main(){
 
-    val output = correctCode(computerInputs)
+    for (i in 0..99){
+        for (j in 0..99){
+            val inputs : MutableList<Int> = computerInputs.toMutableList()
+            inputs[1] = i; inputs[2] = j
+            val output = correctCode(inputs)
 
-    output.forEach { out -> println(out)}
+            if(output[0] == 19690720){
+                val out = 100 * i + j
+                println("noun =$out")
+            }
+        }
+    }
+
 
     //print("")
 }
 
-private fun correctCode(computerInputs:  List<Int>) : MutableList<Int> {
-    val inputs : MutableList<Int> = computerInputs.toMutableList()
+private fun correctCode(inputs:   MutableList<Int>) : MutableList<Int> {
     val size = inputs.size
     var i = 0
 
