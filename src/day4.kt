@@ -31,11 +31,7 @@ private fun passwordIsCorrect(password: String): Boolean {
 private fun twoAdjacentDigitsAreTheSame(digits: CharSequence): Boolean {
     var twoAdjacentDigitsAreTheSame = false
 
-//    val size = digits.length
-
     val count = digits.groupingBy { it }.eachCount()
-
-//    println(count)
 
     for(value in count.values){
         if(value == 2 ){
