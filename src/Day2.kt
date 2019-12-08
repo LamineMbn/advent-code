@@ -9,49 +9,13 @@ fun main(){
         for (j in 0..99){
             val inputs : MutableList<Int> = computerInputs.toMutableList()
             inputs[1] = i; inputs[2] = j
-            val output = correctCode(inputs)
+            val output = correctCode(0,inputs)
 
             if(output[0] == 19690720){
                 val out = 100 * i + j
+                check(out == 4112)
                 println("noun =$out")
             }
         }
     }
-}
-
-private fun correctCode(inputs:   MutableList<Int>) : MutableList<Int> {
-    val size = inputs.size
-    var i = 0
-
-    while (i < size) {
-        val firstIndex: Int = inputs[i + 1]
-        val secondIndex: Int = inputs[i + 2]
-        val outputIndex: Int = inputs[i + 3]
-
-        val addElement : (Int, Int) -> Int = Int::plus
-        val multiplyElement : (Int, Int) -> Int = Int::times
-
-        if (inputs[i] == OpCodeEnum.ADDS.number) {
-            inputs[outputIndex] = addElement.invoke(inputs[firstIndex],inputs[secondIndex])
-            i += 4
-            continue
-        }
-
-        if (inputs[i] == OpCodeEnum.MULTIPLY.number) {
-            inputs[outputIndex] = multiplyElement(inputs[firstIndex],inputs[secondIndex])
-            i += 4
-            continue
-        }
-
-        if (inputs[i] == OpCodeEnum.HALT.number) {
-            break
-        }
-
-    }
-
-    return inputs;
-}
-
-enum class OpCodeEnum(val number: Int) {
-    ADDS(1), MULTIPLY(2), HALT(99)
 }
