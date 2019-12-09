@@ -1,84 +1,143 @@
-fun correctCode(systemID: Int = 0, inputs:   MutableList<Int>) : MutableList<Int> {
+private var relativeBase = 0L
+
+fun correctCode(inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> = correctCode(0L, inputs)
+
+fun correctCode(systemID: Long = 0L, inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> {
     val size = inputs.size
     var i = 0
 
-    var output: List<Int> = ArrayList();
+    var output = mutableListOf<Long>()
 
     while (i < size) {
 
-        var opcode = inputs[i]
-        val firstIndex: Int = inputs[i + 1]
+        if (checkEndOfProgram(inputs[i])) break
 
-        if (opcode == OpCodeEnum.HALT.number) {
-            break
+        val firstIndex = inputs[i + 1]
+        val firstElement = retrieveElement(retrieveFirstElementMode(inputs[i]), inputs, firstIndex)
+
+        val opcode = inputs[i] % 10
+
+        val opCodeValue = OpCodeEnum.valueOfOpcode(opcode.toInt())
+
+        if(opCodeValue == OpCodeEnum.READ){
+            var mode = retrieveFirstElementMode(inputs[i])
+            var index = firstElement
+            if(mode.toInt() == 2){
+                index = firstIndex + relativeBase
+            }
+            inputs[index.toInt()] = systemID
+            i += OpCodeEnum.READ.offset
+            continue
+        } else if(opCodeValue == OpCodeEnum.WRITE){
+            output.plusAssign(firstElement)
+            i += OpCodeEnum.WRITE.offset
+            continue
+        } else if(opCodeValue == OpCodeEnum.ADJUST_BASE){
+            relativeBase = opCodeValue.operation(firstElement, relativeBase)
+            i += OpCodeEnum.ADJUST_BASE.offset
+            continue
+        }
+
+        val secondIndex = inputs[i + 2]
+        val outputIndex = inputs[i + 3]
+
+        val secondElement = retrieveElement(retrieveSecondElementMode(inputs[i]), inputs, secondIndex)
+        val outputElement = retrieveOutputIndex(retrieveOutputElementMode(inputs[i]), outputIndex)
+
+         if (opCodeValue == OpCodeEnum.JUMP_IF_TRUE || opCodeValue == OpCodeEnum.JUMP_IF_FALSE) {
+            i = opCodeValue.operation(firstElement, secondElement, i)
         } else {
-            opcode = inputs[i] % 10
-        }
-
-        if (opcode == 3) {
-            inputs[firstIndex] = systemID;
-            i += 2
-            continue
-        }
-
-        if (opcode == 4) {
-            output += inputs[firstIndex]
-            println(inputs[firstIndex])
-            println(output)
-            i += 2
-            continue
-        }
-
-        val secondIndex: Int = inputs[i + 2]
-        val outputIndex: Int = inputs[i + 3]
-
-        val firstIsPositionMode = (inputs[i] / 100) % 10 == 0
-        val secondIsPositionMode = (inputs[i] / 1000) % 10 == 0
-
-        val firstElement = if (firstIsPositionMode) inputs[firstIndex] else firstIndex
-        val secondElement = if (secondIsPositionMode) inputs[secondIndex] else secondIndex
-
-
-        val addElement: (Int, Int) -> Int = Int::plus
-        val multiplyElement: (Int, Int) -> Int = Int::times
-
-
-        if (opcode == OpCodeEnum.ADDS.number) {
-            inputs[outputIndex] = addElement.invoke(firstElement, secondElement)
-            i += 4
-            continue
-        } else if (opcode == OpCodeEnum.MULTIPLY.number) {
-            inputs[outputIndex] = multiplyElement(firstElement, secondElement)
-            i += 4
-            continue
-        } else if (opcode == 5) {
-            if (firstElement != 0) {
-                i = secondElement
-            } else {
-                i += 3
-            }
-            continue
-        } else if (opcode == 6) {
-            if (firstElement == 0) {
-                i = secondElement
-            } else {
-                i += 3
-            }
-            continue
-        } else if (opcode == 7) {
-            inputs[outputIndex] = if (firstElement < secondElement) 1 else 0
-            i += 4
-            continue
-        } else if (opcode == 8) {
-            inputs[outputIndex] = if (firstElement == secondElement) 1 else 0
-            i += 4
-            continue
+            inputs[outputElement.toInt()] = opCodeValue!!.operation(firstElement, secondElement)
+            i += opCodeValue.offset
         }
     }
 
-    return inputs;
+//    println(inputs)
+
+    return output to inputs;
 }
 
-enum class OpCodeEnum(val number: Int) {
-    ADDS(1), MULTIPLY(2), HALT(99)
+private fun checkEndOfProgram(mode: Long): Boolean {
+    if (mode.toInt() == OpCodeEnum.HALT.number) {
+        return true
+    }
+    return false
+}
+
+private fun retrieveElement(
+    paramMode: Long,
+    inputs: MutableList<Long>,
+    index: Long
+): Long {
+
+    var element = index
+    if (paramMode.toInt() == 0) {
+        element = inputs[index.toInt()]
+    } else if(paramMode.toInt() == 2){
+        element = inputs[relativeBase.toInt() + index.toInt()]
+    }
+    return element
+}
+
+private fun retrieveOutputIndex(
+    paramMode: Long,
+    index: Long
+): Long {
+    var element = index
+
+    if(paramMode.toInt() == 2){
+        element = relativeBase + index
+    }
+
+    return element
+}
+
+private fun retrieveFirstElementMode(element: Long) = (element / 100) % 10
+private fun retrieveSecondElementMode(element: Long) = (element / 1000) % 10
+private fun retrieveOutputElementMode(element: Long) = (element / 10000) % 10
+
+enum class OpCodeEnum(val number: Int, val offset: Int = 0) {
+    ADD(1, offset = 4) {
+        override fun operation(a: Long, b: Long) = addElement.invoke(a, b)
+    },
+
+    MULTIPLY(2, offset = 4) {
+        override fun operation(a: Long, b: Long) = multiplyElement.invoke(a, b)
+    },
+
+    READ(3, offset = 2),
+
+    WRITE(4, offset = 2),
+
+    JUMP_IF_TRUE(5, offset = 3) {
+        override fun operation(a: Long, b: Long, index: Int): Int = if (a != 0L) b.toInt() else index.plus(offset)
+    },
+
+    JUMP_IF_FALSE(6, offset = 3) {
+        override fun operation(a: Long, b: Long, index: Int): Int = if (a == 0L) b.toInt() else index + offset
+    },
+
+    LESS_THAN(7, offset = 4) {
+        override fun operation(a: Long, b: Long) = if (a < b) 1L else 0L
+    },
+
+    EQUALS(8, offset = 4) {
+        override fun operation(a: Long, b: Long) = if (a == b) 1L else 0L
+    },
+    ADJUST_BASE(9, offset = 2) {
+        override fun operation(a: Long, b: Long) = addElement.invoke(a, b)
+    },
+
+    HALT(99);
+
+    val addElement: (Long, Long) -> Long = Long::plus
+    val multiplyElement: (Long, Long) -> Long = Long::times
+
+    open fun operation(a: Long, b: Long): Long = 0
+    open fun operation(a: Long, b: Long, index: Int): Int = 0
+
+    companion object {
+        private val map = values().associateBy { opCodeEnum: OpCodeEnum -> opCodeEnum.number }
+        fun valueOfOpcode(type: Int) = map[type]
+    }
 }
