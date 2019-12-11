@@ -11,7 +11,7 @@ fun main(){
         for (j in 0..99){
             val inputs : MutableList<Long> = computerInputs.toMutableList()
             inputs[1] = i.toLong(); inputs[2] = j.toLong()
-            val output = correctCode(0, inputs)
+            val output = correctCode(0L to 0L, inputs)
 
             if(output.second[0] == 19690720L){
                 val out = 100 * i + j

@@ -13,7 +13,7 @@ fun main() {
         input.add(i,0)
     }
 
-    val output = correctCode(2,input.toMutableList())
+    val output = correctCode(2L to 0L,input.toMutableList())
 
     println(output.first)
     println(output.second)

@@ -1,16 +1,22 @@
+import java.lang.RuntimeException
+
 private var relativeBase = 0L
 
-fun correctCode(inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> = correctCode(0L, inputs)
+fun correctCode(inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> = correctCode(0L to 0L, inputs)
 
-fun correctCode(systemID: Long = 0L, inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> {
+fun correctCode(systemID: Pair<Long,Long> = 0L to 0L, input: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> {
+    var inputs = input.toMutableList()
     val size = inputs.size
     var i = 0
+    var isSettings = true
 
     var output = mutableListOf<Long>()
 
     while (i < size) {
 
-        if (checkEndOfProgram(inputs[i])) break
+        if (checkEndOfProgram(inputs[i])) {
+            throw RuntimeException("${output[0]}")
+        }
 
         val firstIndex = inputs[i + 1]
         val firstElement = retrieveElement(retrieveFirstElementMode(inputs[i]), inputs, firstIndex)
@@ -21,11 +27,12 @@ fun correctCode(systemID: Long = 0L, inputs: MutableList<Long>): Pair<MutableLis
 
         if(opCodeValue == OpCodeEnum.READ){
             var mode = retrieveFirstElementMode(inputs[i])
-            var index = firstElement
+            var index = firstIndex
             if(mode.toInt() == 2){
                 index = firstIndex + relativeBase
             }
-            inputs[index.toInt()] = systemID
+            inputs[index.toInt()] = if(isSettings) systemID.first else systemID.second
+            isSettings = false
             i += OpCodeEnum.READ.offset
             continue
         } else if(opCodeValue == OpCodeEnum.WRITE){
