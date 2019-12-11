@@ -1,3 +1,6 @@
+package day5
+
+import correctCode
 
 fun main(){
 //    var computerInputs : List<Int> = listOf(3,4,1002,4,3,4,33)

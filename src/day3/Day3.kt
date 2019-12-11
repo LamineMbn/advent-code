@@ -1,3 +1,5 @@
+package day3
+
 import kotlin.math.abs
 
 fun main() {

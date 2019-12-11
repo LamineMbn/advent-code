@@ -1,7 +1,4 @@
-import java.awt.Color
-import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
+package day8
 
 
 fun main(){
@@ -23,8 +20,8 @@ fun main(){
 
     val finalLayer = wantedLayer.minBy { it.key }!!.value
 
-    val numberOfOneDigit = countOccurence(finalLayer,'1')
-    val numberOfTwoDigit = countOccurence(finalLayer,'2')
+    val numberOfOneDigit = countOccurence(finalLayer, '1')
+    val numberOfTwoDigit = countOccurence(finalLayer, '2')
 
     println(finalLayer)
     println(numberOfOneDigit * numberOfTwoDigit)

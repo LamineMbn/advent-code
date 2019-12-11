@@ -1,3 +1,5 @@
+package day4
+
 fun main() {
 
     var numberOfCorrectPassorwd = 0;
