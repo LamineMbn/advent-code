@@ -2,20 +2,22 @@ import java.lang.RuntimeException
 
 private var relativeBase = 0L
 
-fun correctCode(inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> = correctCode(0L to 0L, inputs)
+fun paint(inputs: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> = correctCode(0L to 0L, inputs)
 
-fun correctCode(systemID: Pair<Long,Long> = 0L to 0L, input: MutableList<Long>): Pair<MutableList<Long>, MutableList<Long>> {
+fun paint(systemID: Long = 0L, input: MutableList<Long>): Pair<MutableList<Long>, Int> {
     var inputs = input.toMutableList()
     val size = inputs.size
     var i = 0
-    var isSettings = true
+    var passage = 0
+    var painting = 0
 
     var output = mutableListOf<Long>()
 
     while (i < size) {
 
         if (checkEndOfProgram(inputs[i])) {
-            throw RuntimeException("${output[0]}")
+            println("OpCode Write = $passage")
+            break
         }
 
         val firstIndex = inputs[i + 1]
@@ -31,12 +33,18 @@ fun correctCode(systemID: Pair<Long,Long> = 0L to 0L, input: MutableList<Long>):
             if(mode.toInt() == 2){
                 index = firstIndex + relativeBase
             }
-            inputs[index.toInt()] = if(isSettings) systemID.first else systemID.second
-            isSettings = false
+            inputs[index.toInt()] = if(output.isEmpty()) systemID else output.last()
             i += RobotOpCodeEnum.READ.offset
             continue
         } else if(opCodeValue == RobotOpCodeEnum.WRITE){
             output.plusAssign(firstElement)
+            if(passage % 2 == 0){
+                painting++
+                passage++
+            } else {
+                passage++
+            }
+
             i += RobotOpCodeEnum.WRITE.offset
             continue
         } else if(opCodeValue == RobotOpCodeEnum.ADJUST_BASE){
@@ -61,7 +69,7 @@ fun correctCode(systemID: Pair<Long,Long> = 0L to 0L, input: MutableList<Long>):
 
 //    println(inputs)
 
-    return output to inputs;
+    return output to painting;
 }
 
 private fun checkEndOfProgram(mode: Long): Boolean {
@@ -103,7 +111,7 @@ private fun retrieveFirstElementMode(element: Long) = (element / 100) % 10
 private fun retrieveSecondElementMode(element: Long) = (element / 1000) % 10
 private fun retrieveOutputElementMode(element: Long) = (element / 10000) % 10
 
-enum class OpCodeEnum(val number: Int, val offset: Int = 0) {
+enum class RobotOpCodeEnum(val number: Int, val offset: Int = 0) {
     ADD(1, offset = 4) {
         override fun operation(a: Long, b: Long) = addElement.invoke(a, b)
     },
@@ -144,7 +152,7 @@ enum class OpCodeEnum(val number: Int, val offset: Int = 0) {
     open fun operation(a: Long, b: Long, index: Int): Int = 0
 
     companion object {
-        private val map = values().associateBy { opCodeEnum: OpCodeEnum -> opCodeEnum.number }
+        private val map = values().associateBy { robotOpCodeEnum: RobotOpCodeEnum -> robotOpCodeEnum.number }
         fun valueOfOpcode(type: Int) = map[type]
     }
 }
