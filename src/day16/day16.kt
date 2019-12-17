@@ -1,36 +1,64 @@
 package day16
 
 import readFileLineByLineUsingForEachLine
+import kotlin.math.abs
 
-private val signal: CharArray = readFileLineByLineUsingForEachLine("src/day16/input_AoC_input_0.txt").map { it.toCharArray() }.first()
+private val signal: CharArray =
+    readFileLineByLineUsingForEachLine("src/day16/input_AoC_input_1.txt").map { it.toCharArray() }.first()
 
-fun main (){
-    val phase = arrayListOf(0, 1, 0 , -1)
+private val phase = arrayListOf(0, 1, 0, -1)
 
-    val input = signal.toMutableList()
+fun main() {
+
+
+    var input = signal.map { Integer.valueOf(it.toString()) }.toMutableList()
+    var outputSignal: MutableList<Int>
 
     val numberOfPhase = 100
-    val element = 0
 
-    for (i in 0 until  numberOfPhase - 1){
-        var sum = 0
-        var offset = 1
-        val p = mutableListOf<Int>()
-        var k = 0
+    for (i in 1 until numberOfPhase + 1) {
+        outputSignal = input
+        for (j in 0 until outputSignal.size) {
+            var sumPerSignal = 0
+            val phases = shiftList(outputSignal, j + 1)
+            for (k in 0 until outputSignal.size) {
+                val value = phases[k].times(outputSignal[k])
+                sumPerSignal += value
 
-        for (j in input.indices) {
-            if(k == phase.size){
-                k = 0
             }
-            p.plus(phase[k])
+            input[j] = abs(sumPerSignal) % 10
+        }
+    }
+
+    input.take(8).forEach { print(it) }
+
+}
+
+private fun shiftList(
+    input: MutableList<Int>,
+    offSet: Int
+): List<Int> {
+    val p = mutableListOf<Int>()
+
+    var k = 0
+
+    loop@ for (i in input.indices + 1) {
+        for (j in 0 until offSet) {
+            if (p.size == input.size + 1) {
+                break@loop
+            }
+            p += phase[k]
+        }
+        if (k == phase.size - 1) {
+            k = 0
+        } else {
             k++
         }
-
-        val shift = p[0]
-        val ttt = p.subList(1,p.size).plusAssign(shift)
-        print(p)
-//        for (digit in input){
-//            sum += digit.toInt() * p[i]
-//        }
     }
+
+//    p.forEach { print(it) }
+//    println()
+//    p.subList(1, p.size).forEach { print(it) }
+
+    return p.subList(1, p.size)
 }
