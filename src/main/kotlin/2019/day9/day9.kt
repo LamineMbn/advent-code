@@ -3,7 +3,7 @@ package main.kotlin.day9
 import `2019`.correctCode
 import readFile
 
-private val boostProgram: List<Long> = readFile("src/day9/input_AoC_input_1.txt")
+private val boostProgram: List<Long> = readFile("src/main/kotlin/2019/day9/input_AoC_input_1.txt")
     .flatMap{ it.split(",") }.map { it.toLong() }
 
 fun main() {

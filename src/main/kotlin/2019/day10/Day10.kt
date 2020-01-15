@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.math.MathContext
 import kotlin.math.*
 
-private val input = readFile("src/day10/input_AoC_input_1.txt")
+private val input = readFile("src/main/kotlin/2019/day10/input_AoC_input_1.txt")
     .map { it.toCharArray() }
 
 fun main() {

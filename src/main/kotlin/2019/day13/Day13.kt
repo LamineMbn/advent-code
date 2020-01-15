@@ -4,7 +4,7 @@ import main.kotlin.day10.Coordinate
 import `2019`.play
 import readFile
 
-private val arcadeGame: List<Long> = readFile("src/day13/input_AoC_input_1.txt")
+private val arcadeGame: List<Long> = readFile("src/main/kotlin/2019/day13/input_AoC_input_1.txt")
     .flatMap{ it.split(",") }.map { it.toLong() }
 
 

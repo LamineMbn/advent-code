@@ -5,7 +5,7 @@ import readFile
 
 fun main(){
 
-    val computerInputs : List<Long> = readFile("src/day2/input_Aoc_1.txt")
+    val computerInputs : List<Long> = readFile("src/main/kotlin/2019/day2/input_Aoc_1.txt")
         .flatMap{ it.split(",") }.map { it.toLong() }
 
     for (i in 0..99){

@@ -2,7 +2,7 @@ package main.kotlin.day7
 
 import `2019`.correctCode
 
-//private val amplifierControllerSoftware: List<Long> = `2019`.main.kotlin.readFileLineByLineUsingForEachLine("src/day7/input_AoC_input_1.txt").flatMap{ it.split(",") }.map { it.toLong() }
+//private val amplifierControllerSoftware: List<Long> = `2019`.main.kotlin.readFileLineByLineUsingForEachLine("src/main/kotlin/2019/day7/input_AoC_input_1.txt").flatMap{ it.split(",") }.map { it.toLong() }
 private val amplifierControllerSoftware: List<Long> = mutableListOf(
     3,
     26,

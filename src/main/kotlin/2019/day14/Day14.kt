@@ -4,7 +4,7 @@ import readFile
 import java.util.function.Function
 
 private val equations: List<String> =
-    readFile("src/day14/input_AoC_input_0.txt")
+    readFile("src/main/kotlin/2019/day14/input_AoC_input_0.txt")
 
 private val memberTransformer: MemberTransformer =
     MemberTransformer()

@@ -3,7 +3,7 @@ package main.kotlin.day11
 import `2019`.paint
 import readFile
 
-private val robotProgram: List<Long> = readFile("src/day11/input_AoC_input_1.txt")
+private val robotProgram: List<Long> = readFile("src/main/kotlin/2019/day11/input_AoC_input_1.txt")
     .flatMap{ it.split(",") }.map { it.toLong() }
 
 
